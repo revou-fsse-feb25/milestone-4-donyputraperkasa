@@ -1,26 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { PrismaService } from '../prisma/prisma.service'; // jika pakai Prisma
 
 @Injectable()
 export class AccountsService {
-  create(createAccountDto: CreateAccountDto) {
-    return 'This action adds a new account';
+  constructor(private prisma: PrismaService) {}
+
+  create(data: CreateAccountDto) {
+    return this.prisma.account.create({ data });
   }
 
   findAll() {
-    return `This action returns all accounts`;
+    return this.prisma.account.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
+  findOne(id: string) {
+    return this.prisma.account.findUnique({ where: { id: parseInt(id, 10) } });
   }
 
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
+  update(id: string, data: UpdateAccountDto) {
+    return this.prisma.account.update({
+      where: { id: parseInt(id, 10) },
+      data,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+  remove(id: string) {
+    return this.prisma.account.delete({ where: { id: parseInt(id, 10) } });
   }
 }
