@@ -11,17 +11,28 @@ export class TransactionsService {
 
   // bagian deposit
   async deposit(dto: DepositDto) {
-    await this.prisma.account.update({
-      where: { id: dto.accountId },
-      data: { balance: { increment: dto.amount } },
-    });
-    return this.prisma.transaction.create({
-      data: {
-        accountsId: dto.accountId,
-        Type: TransactionType.DEPOSIT,
-        description: `Deposit of ${dto.amount}`,
-      },
-    });
+    console.log('📥 Deposit DTO:', dto);
+    try {
+      const updated = await this.prisma.account.update({
+        where: { id: dto.accountId },
+        data: { balance: { increment: dto.amount } },
+      });
+      console.log('✅ Deposit success (account update):', updated);
+
+      const transaction = await this.prisma.transaction.create({
+        data: {
+          accountsId: dto.accountId,
+          Type: TransactionType.DEPOSIT,
+          description: `Deposit of ${dto.amount}`,
+        },
+      });
+      console.log('✅ Transaction record created:', transaction);
+
+      return transaction;
+    } catch (error) {
+      console.error('❌ Deposit error:', error);
+      throw new BadRequestException('Deposit failed');
+    }
   }
 
   // bagian withdraw
