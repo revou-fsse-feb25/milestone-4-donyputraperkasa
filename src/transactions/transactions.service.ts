@@ -60,6 +60,10 @@ export class TransactionsService {
       throw new BadRequestException('Cannot transfer to the same account');
     }
     const from = await this.prisma.account.findUnique({ where: { id: dto.fromAccountId } });
+    const to = await this.prisma.account.findUnique({ where: { id: dto.toAccountId } });
+    if (!to) {
+      throw new BadRequestException('Recipient account not found');
+    }
     if (!from || from.balance < dto.amount) {
       throw new BadRequestException('Insufficient funds');
     }
@@ -83,5 +87,15 @@ export class TransactionsService {
     ]);
 
     return { message: 'Transfer successful' };
+  }
+
+  // bagian get transaksi
+  async getAll() {
+    return this.prisma.transaction.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        accounts: true, 
+      },
+    });
   }
 }

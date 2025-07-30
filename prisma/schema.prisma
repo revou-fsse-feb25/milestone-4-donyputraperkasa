@@ -26,23 +26,31 @@ model User {
 
 model Account {
   id            Int             @id @default(autoincrement())
+  userId        Int
   user          User            @relation(fields: [userId], references: [id])
   name          String
-  userId        Int
   balance       Float           @default(0)
   transactions  Transaction[]
+  fromTransfers Transaction[]   @relation("fromAccount")
+  toTransfers   Transaction[]   @relation("toAccount")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
 
 model Transaction {
-  id            Int       @id @default(autoincrement())
-  accountsId    Int
-  Type          TransactionType
-  description   String?
-  createdAt     DateTime   @default(now())
-  accounts      Account   @relation(fields: [accountsId], references: [id])
+  id              Int             @id @default(autoincrement())
+  accountsId      Int
+  amount          Float           @default(0)
+  fromAccountId   Int?
+  toAccountId     Int?
 
+  accounts        Account         @relation(fields: [accountsId], references: [id])
+  fromAccount     Account?        @relation("fromAccount", fields: [fromAccountId], references: [id])
+  toAccount       Account?        @relation("toAccount", fields: [toAccountId], references: [id])
+
+  Type            TransactionType
+  description     String?
+  createdAt       DateTime        @default(now())
 }
 
 enum Role {
@@ -55,5 +63,3 @@ enum TransactionType {
   WITHDRAW
   TRANSFER
 }
-
-
