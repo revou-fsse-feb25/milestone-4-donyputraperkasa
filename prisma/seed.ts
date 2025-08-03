@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 async function main() {
   // Seed untuk admin
     const admin = await prisma.user.upsert({
-        where: { email: 'admin@example.com' },
+        where: { email: 'admin@mail.com' },
         update: {},
         create: {
-        email: 'admin@example.com',
+        email: 'admin@mail.com',
         name: 'Admin',
         role: Role.ADMIN,
         password: 'admin123', // ini nanti di hash
