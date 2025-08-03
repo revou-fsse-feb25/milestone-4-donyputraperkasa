@@ -98,4 +98,11 @@ export class TransactionsService {
       },
     });
   }
+
+  async getById(id: number) {
+  return this.prisma.transaction.findUnique({
+    where: { id },
+    include: { accounts: true },
+  });
+}
 }
